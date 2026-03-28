@@ -1,29 +1,52 @@
+import pytest
 from app.main import get_human_age
 
 
-def test_should_return_zero_when_zero_passed() -> None:
-    assert get_human_age(0, 0) == [0, 0]
+@pytest.mark.parametrize(
+    "cat_age, dog_age, expected",
+    [
+        (0, 0, [0, 0]),
+        (14, 14, [0, 0]),
+        (13, 13, [0, 0]),
+        (15, 15, [1, 1]),
+        (23, 23, [1, 1]),
+        (24, 24, [2, 2]),
+        (27, 27, [2, 2]),
+        (28, 28, [3, 2]),
+        (100, 100, [21, 17]),
+    ],
+)
+def test_get_human_age(
+    cat_age: int,
+    dog_age: int,
+    expected: list[int]
+) -> None:
+    assert get_human_age(cat_age, dog_age) == expected
 
 
-def test_should_return_one_when_first_period_passed() -> None:
-    assert get_human_age(15, 15) == [1, 1]
+@pytest.mark.parametrize(
+    "cat_age, dog_age",
+    [
+        (-1, 5),
+        (5, -1),
+        (-10, -10),
+    ],
+)
+def test_negative_values(cat_age: int, dog_age: int) -> None:
+    with pytest.raises(ValueError):
+        get_human_age(cat_age, dog_age)
 
 
-def test_first_period_end_returns_one() -> None:
-    assert get_human_age(23, 23) == [1, 1]
-
-
-def test_second_period_start_returns_two() -> None:
-    assert get_human_age(24, 24) == [2, 2]
-
-
-def test_second_period_end_returns_two() -> None:
-    assert get_human_age(27, 27) == [2, 2]
-
-
-def test_third_period_start_should_return_diff_ages() -> None:
-    assert get_human_age(28, 28) == [3, 2]
-
-
-def test_one_hundred_years() -> None:
-    assert get_human_age(100, 100) == [21, 17]
+@pytest.mark.parametrize(
+    "cat_age, dog_age",
+    [
+        ("10", 10),
+        (10, "10"),
+        (None, 10),
+        (10, None),
+        (10.5, 5),
+    ]
+)
+def test_invalid_types(cat_age: int, dog_age: int) -> None:
+    with pytest.raises(TypeError):
+        get_human_age(cat_age, dog_age)
